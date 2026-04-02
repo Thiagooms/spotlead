@@ -35,7 +35,7 @@ export default function LoginPage() {
 
     await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback` },
     })
     setMagicLinkSent(true)
     setIsLoading(false)
@@ -63,7 +63,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">ScanFreela</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">SpotLead</h1>
         <p className="text-sm text-gray-500 mb-6">Encontre leads. Feche contratos.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
