@@ -2,6 +2,29 @@ export type LeadStatus = 'new' | 'approached' | 'negotiating' | 'closed'
 
 export type UserPlan = 'free' | 'paid'
 
+export const LEAD_STATUS_FLOW: Record<LeadStatus, LeadStatus | null> = {
+  new: 'approached',
+  approached: 'negotiating',
+  negotiating: 'closed',
+  closed: null,
+}
+
+export const LEAD_STATUS_COLUMN_LABELS: Record<LeadStatus, string> = {
+  new: 'Novo',
+  approached: 'Abordado',
+  negotiating: 'Negociando',
+  closed: 'Fechado',
+}
+
+export const LEAD_STATUS_ACTION_LABELS: Record<LeadStatus, string> = {
+  new: 'Marcar como Abordado',
+  approached: 'Marcar como Negociando',
+  negotiating: 'Marcar como Fechado',
+  closed: '',
+}
+
+export const LEAD_STATUS_ORDER: LeadStatus[] = ['new', 'approached', 'negotiating', 'closed']
+
 export interface Lead {
   id: string
   userId: string

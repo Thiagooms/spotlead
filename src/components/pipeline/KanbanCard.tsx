@@ -1,18 +1,11 @@
 'use client'
 
-import { Lead, LeadStatus } from '@/lib/types/lead'
+import { Lead, LeadStatus, LEAD_STATUS_ACTION_LABELS } from '@/lib/types/lead'
 
 interface KanbanCardProps {
   lead: Lead
   onMove: (leadId: string, status: LeadStatus) => void
   nextStatus: LeadStatus | null
-}
-
-const NEXT_STATUS_LABELS: Record<LeadStatus, string> = {
-  new: 'Marcar como Abordado',
-  approached: 'Marcar como Negociando',
-  negotiating: 'Marcar como Fechado',
-  closed: '',
 }
 
 export function KanbanCard({ lead, onMove, nextStatus }: KanbanCardProps) {
@@ -30,7 +23,7 @@ export function KanbanCard({ lead, onMove, nextStatus }: KanbanCardProps) {
           onClick={() => onMove(lead.id, nextStatus)}
           className="w-full text-xs py-1 px-2 rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
         >
-          {NEXT_STATUS_LABELS[lead.status]}
+          {LEAD_STATUS_ACTION_LABELS[lead.status]}
         </button>
       )}
     </div>

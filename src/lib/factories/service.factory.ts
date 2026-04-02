@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import MercadoPagoConfig, { PreApproval, PreApprovalPlan } from 'mercadopago'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { ProfileRepository } from '@/lib/repositories/profile.repository'
+import { GooglePlacesRepository } from '@/lib/repositories/google-places.repository'
 import { LeadScorer } from '@/lib/scoring/lead.scorer'
 import { PlanGuard } from '@/lib/guards/plan.guard'
 import { LeadService } from '@/lib/services/lead.service'
@@ -16,9 +17,14 @@ export function makeLeadService(supabase: SupabaseClient): LeadService {
   return new LeadService(leadRepository, planGuard)
 }
 
+export function makeProfileRepository(supabase: SupabaseClient): ProfileRepository {
+  return new ProfileRepository(supabase)
+}
+
 export function makePlacesService(): PlacesService {
   const scorer = new LeadScorer()
-  return new PlacesService(scorer)
+  const placesRepository = new GooglePlacesRepository(process.env.GOOGLE_PLACES_API_KEY!)
+  return new PlacesService(scorer, placesRepository)
 }
 
 export function makeMercadoPagoService(): MercadoPagoService {
