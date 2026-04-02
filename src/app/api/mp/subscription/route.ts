@@ -7,8 +7,16 @@ const mpService = makeMercadoPagoService()
 
 export async function POST(request: NextRequest) {
   return withAuth(async (user) => {
-    const body: CreateSubscriptionInput = await request.json()
-    const result = await mpService.createSubscription(user.id, body)
-    return NextResponse.json(result)
+    try {
+      const body: CreateSubscriptionInput = await request.json()
+      const result = await mpService.createSubscription(user.id, body)
+      return NextResponse.json(result)
+    } catch (error) {
+      console.error('MP subscription error:', error)
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'Erro ao criar assinatura' },
+        { status: 500 }
+      )
+    }
   })
 }
