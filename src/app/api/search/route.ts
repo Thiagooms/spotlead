@@ -9,8 +9,15 @@ export async function POST(request: NextRequest) {
   return withAuth(async () => {
     const body: PlacesSearchParams = await request.json()
 
-    if (!body.query || !body.city) {
+    const query = body.query?.trim()
+    const city = body.city?.trim()
+
+    if (!query || !city) {
       return NextResponse.json({ error: 'query and city are required' }, { status: 400 })
+    }
+
+    if (query.length > 100 || city.length > 100) {
+      return NextResponse.json({ error: 'query and city must be under 100 characters' }, { status: 400 })
     }
 
     const results = await placesService.search(body)

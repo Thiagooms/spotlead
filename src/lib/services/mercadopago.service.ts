@@ -37,11 +37,15 @@ export class MercadoPagoService {
       },
     })
 
-    await this.profileRepository.updateMpSubscriptionId(userId, subscription.id!)
+    if (!subscription.id || !subscription.status) {
+      throw new Error('Resposta inválida do Mercado Pago ao criar assinatura')
+    }
+
+    await this.profileRepository.updateMpSubscriptionId(userId, subscription.id)
 
     return {
-      subscriptionId: subscription.id!,
-      status: subscription.status!,
+      subscriptionId: subscription.id,
+      status: subscription.status,
     }
   }
 
