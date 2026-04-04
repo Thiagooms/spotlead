@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Check, X } from 'lucide-react'
-import { CONTAINER, PILL_STYLE, fadeUpInView } from './tokens'
+import { CONTAINER, PILL_STYLE, EASE, fadeUpInView } from './tokens'
 import { PLAN_CONFIGS, type PlanConfig, type PlanFeature } from '@/lib/config/plans'
 
 type Plan = PlanConfig
