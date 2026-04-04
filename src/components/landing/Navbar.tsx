@@ -7,6 +7,22 @@ import { useState, useEffect } from 'react'
 import { motion, useScroll } from 'framer-motion'
 import { CONTAINER_NAV } from './tokens'
 
+const NAV_OFFSET = -96
+
+type WindowWithLenis = typeof window & { __lenis?: { scrollTo: (target: HTMLElement | number, opts?: { offset?: number }) => void } }
+
+function scrollToSection(id: string) {
+  const el = document.getElementById(id)
+  if (!el) return
+  const lenis = (window as WindowWithLenis).__lenis
+  if (lenis) {
+    lenis.scrollTo(el, { offset: NAV_OFFSET })
+  } else {
+    const top = el.getBoundingClientRect().top + window.scrollY + NAV_OFFSET
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+}
+
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -43,7 +59,11 @@ export function Navbar() {
       <div className={`${CONTAINER_NAV} flex items-center justify-between h-[clamp(3.5rem,6.25vw,5rem)]`}>
 
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => {
+            const lenis = (window as WindowWithLenis).__lenis
+            if (lenis) lenis.scrollTo(0)
+            else window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
           className="flex items-center gap-[10px] shrink-0 cursor-pointer"
         >
           <Image
@@ -69,12 +89,18 @@ export function Navbar() {
         </div>
 
         <nav className="hidden md:flex items-center">
-          <Link href="#funcionalidades" className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black/55 hover:text-black/80 transition-colors duration-200">
+          <button
+            onClick={() => scrollToSection('funcionalidades')}
+            className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black/55 hover:text-black/80 transition-colors duration-200 cursor-pointer"
+          >
             Funcionalidades
-          </Link>
-          <Link href="#planos" className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black/55 hover:text-black/80 transition-colors duration-200 ml-[clamp(0.75rem,1.1vw,1rem)]">
+          </button>
+          <button
+            onClick={() => scrollToSection('planos')}
+            className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black/55 hover:text-black/80 transition-colors duration-200 ml-[clamp(0.75rem,1.1vw,1rem)] cursor-pointer"
+          >
             Planos
-          </Link>
+          </button>
           <Link href="/register" className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black hover:text-black/70 transition-colors duration-200 ml-[clamp(1.25rem,1.75vw,1.5625rem)]">
             Criar Conta
           </Link>
@@ -108,12 +134,25 @@ export function Navbar() {
             <input type="text" placeholder="buscar no site..." className="flex-1 text-sm text-black/60 placeholder:text-black/40 bg-transparent outline-none" />
           </div>
           {[
-            { href: '#funcionalidades', label: 'Funcionalidades', muted: true },
-            { href: '#planos', label: 'Planos', muted: true },
-            { href: '/register', label: 'Criar Conta', muted: false },
-            { href: '/login', label: 'Login', muted: false },
-          ].map(({ href, label, muted }) => (
-            <Link key={href} href={href} className={`text-sm font-medium ${muted ? 'text-black/55' : 'text-black'}`} onClick={() => setMenuOpen(false)}>
+            { id: 'funcionalidades', label: 'Funcionalidades', muted: true },
+            { id: 'planos', label: 'Planos', muted: true },
+          ].map(({ id, label, muted }) => (
+            <button
+              key={id}
+              onClick={() => {
+                scrollToSection(id)
+                setMenuOpen(false)
+              }}
+              className={`text-sm font-medium text-left cursor-pointer ${muted ? 'text-black/55' : 'text-black'}`}
+            >
+              {label}
+            </button>
+          ))}
+          {[
+            { href: '/register', label: 'Criar Conta' },
+            { href: '/login', label: 'Login' },
+          ].map(({ href, label }) => (
+            <Link key={href} href={href} className="text-sm font-medium text-black" onClick={() => setMenuOpen(false)}>
               {label}
             </Link>
           ))}
