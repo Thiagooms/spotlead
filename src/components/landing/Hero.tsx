@@ -38,10 +38,10 @@ export function Hero() {
               className="rounded-full"
             >
               <Link
-                href="/register"
+                href="/login"
                 className="inline-flex items-center justify-center bg-[#0081F6] text-white font-medium text-[1rem] px-8 h-12 rounded-full select-none"
               >
-                Comece Agora
+                Começar agora
               </Link>
             </motion.div>
           </motion.div>

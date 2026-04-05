@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
-import { buildAppUrl } from '@/lib/config/app-url'
+import { ProfileRepository } from '@/lib/repositories/profile.repository'
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const code = searchParams.get('code')
+  const requestUrl = new URL(request.url)
+  const origin = requestUrl.origin
+  const code = requestUrl.searchParams.get('code')
 
   if (code) {
     const cookieStore = await cookies()
@@ -24,9 +26,14 @@ export async function GET(request: NextRequest) {
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) return NextResponse.redirect(buildAppUrl('/dashboard'))
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error && data.user) {
+      const profileRepository = new ProfileRepository(supabase as unknown as SupabaseClient)
+      await profileRepository.ensureProfile(data.user.id).catch(() => null)
+      return NextResponse.redirect(`${origin}/dashboard`)
+    }
   }
 
-  return NextResponse.redirect(buildAppUrl('/login?error=auth'))
+  return NextResponse.redirect(`${origin}/login?error=auth`)
 }

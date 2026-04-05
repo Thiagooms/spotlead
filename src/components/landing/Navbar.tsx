@@ -78,11 +78,8 @@ export function Navbar() {
           >
             Planos
           </button>
-          <Link href="/register" className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black hover:text-black/70 transition-colors duration-200 ml-[clamp(1.25rem,1.75vw,1.5625rem)]">
-            Criar Conta
-          </Link>
-          <Link href="/login" className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black hover:text-black/70 transition-colors duration-200 ml-[clamp(0.75rem,1.1vw,1rem)]">
-            Login
+          <Link href="/login" className="text-[clamp(0.875rem,1.1vw,1rem)] font-medium text-black hover:text-black/70 transition-colors duration-200 ml-[clamp(1.25rem,1.75vw,1.5625rem)]">
+            Acessar plataforma
           </Link>
         </nav>
 
@@ -125,14 +122,9 @@ export function Navbar() {
               {label}
             </button>
           ))}
-          {[
-            { href: '/register', label: 'Criar Conta' },
-            { href: '/login', label: 'Login' },
-          ].map(({ href, label }) => (
-            <Link key={href} href={href} className="text-sm font-medium text-black" onClick={() => setMenuOpen(false)}>
-              {label}
-            </Link>
-          ))}
+          <Link href="/login" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-black">
+            Acessar plataforma
+          </Link>
         </div>
       </motion.div>
 

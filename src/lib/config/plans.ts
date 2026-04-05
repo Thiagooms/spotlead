@@ -21,7 +21,7 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     price: null,
     period: null,
     cta: 'Começar grátis',
-    ctaHref: '/register',
+    ctaHref: '/login',
     highlighted: false,
     features: [
       { label: 'Até 10 leads salvos', included: true },
@@ -38,7 +38,7 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     price: 'R$49',
     period: '/mês',
     cta: 'Assinar agora',
-    ctaHref: '/register?plan=pro',
+    ctaHref: '/login?plan=pro',
     highlighted: true,
     features: [
       { label: 'Leads ilimitados', included: true },

@@ -42,6 +42,14 @@ export class ProfileRepository {
     return profile.plan
   }
 
+  async ensureProfile(userId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('profiles')
+      .upsert({ id: userId, plan: 'free' }, { onConflict: 'id', ignoreDuplicates: true })
+
+    if (error) throw new Error(error.message)
+  }
+
   async updatePlan(userId: string, plan: UserPlan): Promise<void> {
     const { error } = await this.supabase
       .from('profiles')
