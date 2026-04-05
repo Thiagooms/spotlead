@@ -41,6 +41,7 @@ export interface Lead {
   status: LeadStatus
   notes: string | null
   lastContact: string | null
+  address: string | null
   createdAt: string
 }
 
@@ -55,6 +56,7 @@ export interface LeadPersistInput {
   website: string | null
   rating: number | null
   totalRatings: number | null
+  address: string | null
 }
 
 export interface LeadUpdateInput {

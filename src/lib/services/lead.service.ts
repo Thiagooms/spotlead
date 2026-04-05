@@ -48,6 +48,7 @@ export class LeadService {
       website: scoredPlace.website,
       rating: scoredPlace.rating,
       totalRatings: scoredPlace.totalRatings,
+      address: scoredPlace.address,
     }
 
     return this.leadRepository.saveSecure(leadInput)

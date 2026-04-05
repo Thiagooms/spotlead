@@ -55,6 +55,7 @@ export class LeadRepository {
         p_rating: input.rating,
         p_total_ratings: input.totalRatings,
         p_website: input.website,
+        p_address: input.address,
       })
       .single()
 
@@ -109,6 +110,7 @@ export class LeadRepository {
       status: assertLeadStatus(row.status),
       notes: assertOptionalString(row.notes, 'notes'),
       lastContact: assertOptionalString(row.last_contact, 'last_contact'),
+      address: assertOptionalString(row.address, 'address'),
       createdAt: assertString(row.created_at, 'created_at'),
     }
   }
