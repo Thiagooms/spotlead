@@ -1,9 +1,11 @@
 import { parseResponse } from '@/lib/api/errors'
 import { UserPlan } from '@/lib/types/lead'
 
-interface ProfileResult {
+export interface ProfileResult {
   id: string
   plan: UserPlan
+  effectivePlan: UserPlan
+  trialEndsAt: string | null
 }
 
 export const profileApiClient = {

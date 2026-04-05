@@ -11,9 +11,13 @@ export async function GET() {
       const profileRepository = makeProfileRepository(supabase)
       const profile = await profileRepository.findById(user.id)
 
+      const effectivePlan = await profileRepository.getPlanByUserId(user.id)
+
       return NextResponse.json({
         id: user.id,
         plan: profile?.plan ?? 'free',
+        effectivePlan,
+        trialEndsAt: profile?.trialEndsAt ?? null,
       })
     } catch (error) {
       return handleRouteError(error, 'Profile API error:')

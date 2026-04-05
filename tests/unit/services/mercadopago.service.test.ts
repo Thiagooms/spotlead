@@ -48,6 +48,7 @@ describe('MercadoPagoService', () => {
       id: 'user-1',
       mpSubscriptionId: 'sub-1',
       plan: 'paid',
+      trialEndsAt: null,
     })
 
     await service.handleWebhook({
@@ -68,6 +69,7 @@ describe('MercadoPagoService', () => {
       id: 'user-1',
       mpSubscriptionId: 'sub-1',
       plan: 'free',
+      trialEndsAt: null,
     })
 
     await service.handleWebhook({
@@ -87,11 +89,13 @@ describe('MercadoPagoService', () => {
         id: 'user-1',
         mpSubscriptionId: 'sub-paused',
         plan: 'free',
+        trialEndsAt: null,
       })
       .mockResolvedValueOnce({
         id: 'user-1',
         mpSubscriptionId: 'sub-paused',
         plan: 'free',
+        trialEndsAt: null,
       })
     vi.mocked(preApproval.get).mockResolvedValue({ id: 'sub-paused', status: 'paused' })
     vi.mocked(profileRepository.tryAcquireSubscriptionLock).mockResolvedValue(true)

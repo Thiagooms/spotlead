@@ -4,6 +4,7 @@ import { UserPlan } from '@/lib/types/lead'
 export interface Profile {
   id: string
   plan: UserPlan
+  trialEndsAt: string | null
   mpSubscriptionId: string | null
 }
 
@@ -35,11 +36,11 @@ export class ProfileRepository {
   async getPlanByUserId(userId: string): Promise<UserPlan> {
     const profile = await this.findById(userId)
 
-    if (!profile) {
-      return 'free'
-    }
+    if (!profile) return 'free'
+    if (profile.plan === 'paid') return 'paid'
+    if (profile.trialEndsAt && new Date(profile.trialEndsAt) > new Date()) return 'paid'
 
-    return profile.plan
+    return 'free'
   }
 
   async ensureProfile(userId: string): Promise<void> {
@@ -98,6 +99,7 @@ export class ProfileRepository {
     return {
       id: row.id as string,
       plan: row.plan as UserPlan,
+      trialEndsAt: row.trial_ends_at as string | null,
       mpSubscriptionId: row.mp_subscription_id as string | null,
     }
   }
