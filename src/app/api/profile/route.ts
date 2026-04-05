@@ -18,6 +18,8 @@ export async function GET() {
         plan: profile?.plan ?? 'free',
         effectivePlan,
         trialEndsAt: profile?.trialEndsAt ?? null,
+        service: profile?.service ?? null,
+        onboardingCompleted: !!profile?.onboardingCompletedAt,
       })
     } catch (error) {
       return handleRouteError(error, 'Profile API error:')

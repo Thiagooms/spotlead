@@ -6,6 +6,9 @@ export interface Profile {
   plan: UserPlan
   trialEndsAt: string | null
   mpSubscriptionId: string | null
+  service: string | null
+  city: string | null
+  onboardingCompletedAt: string | null
 }
 
 export class ProfileRepository {
@@ -93,6 +96,19 @@ export class ProfileRepository {
     if (error) throw new Error(error.message)
   }
 
+  async updateOnboarding(userId: string, service: string, city: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('profiles')
+      .update({
+        service,
+        city,
+        onboarding_completed_at: new Date().toISOString(),
+      })
+      .eq('id', userId)
+
+    if (error) throw new Error(error.message)
+  }
+
   private toEntity(row: Record<string, unknown> | null): Profile | null {
     if (!row) return null
 
@@ -101,6 +117,9 @@ export class ProfileRepository {
       plan: row.plan as UserPlan,
       trialEndsAt: row.trial_ends_at as string | null,
       mpSubscriptionId: row.mp_subscription_id as string | null,
+      service: row.service as string | null,
+      city: row.city as string | null,
+      onboardingCompletedAt: row.onboarding_completed_at as string | null,
     }
   }
 }

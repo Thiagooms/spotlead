@@ -49,6 +49,9 @@ describe('MercadoPagoService', () => {
       mpSubscriptionId: 'sub-1',
       plan: 'paid',
       trialEndsAt: null,
+      service: null,
+      city: null,
+      onboardingCompletedAt: null,
     })
 
     await service.handleWebhook({
@@ -70,6 +73,9 @@ describe('MercadoPagoService', () => {
       mpSubscriptionId: 'sub-1',
       plan: 'free',
       trialEndsAt: null,
+      service: null,
+      city: null,
+      onboardingCompletedAt: null,
     })
 
     await service.handleWebhook({
@@ -84,19 +90,18 @@ describe('MercadoPagoService', () => {
   })
 
   it('nao reutiliza assinatura pausada ao criar uma nova assinatura', async () => {
+    const mockProfile = {
+      id: 'user-1',
+      mpSubscriptionId: 'sub-paused',
+      plan: 'free' as const,
+      trialEndsAt: null,
+      service: null,
+      city: null,
+      onboardingCompletedAt: null,
+    }
     vi.mocked(profileRepository.findById)
-      .mockResolvedValueOnce({
-        id: 'user-1',
-        mpSubscriptionId: 'sub-paused',
-        plan: 'free',
-        trialEndsAt: null,
-      })
-      .mockResolvedValueOnce({
-        id: 'user-1',
-        mpSubscriptionId: 'sub-paused',
-        plan: 'free',
-        trialEndsAt: null,
-      })
+      .mockResolvedValueOnce(mockProfile)
+      .mockResolvedValueOnce(mockProfile)
     vi.mocked(preApproval.get).mockResolvedValue({ id: 'sub-paused', status: 'paused' })
     vi.mocked(profileRepository.tryAcquireSubscriptionLock).mockResolvedValue(true)
     vi.mocked(preApprovalPlan.search).mockResolvedValue({

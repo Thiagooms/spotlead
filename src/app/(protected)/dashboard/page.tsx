@@ -5,6 +5,7 @@ import { SearchForm } from '@/components/search/SearchForm'
 import { ResultsList } from '@/components/search/ResultsList'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
 import { useSearch } from '@/hooks/useSearch'
+import { profileApiClient } from '@/lib/api/profile.client'
 import { createClient } from '@/lib/supabase/client'
 
 export default function DashboardPage() {
@@ -26,6 +27,17 @@ export default function DashboardPage() {
       setUserEmail(data.user?.email ?? '')
     })
   }, [])
+
+  useEffect(() => {
+    if (sessionStorage.getItem('spotlead:firstSearch') !== 'true') return
+    sessionStorage.removeItem('spotlead:firstSearch')
+
+    profileApiClient.get().then(profile => {
+      if (profile.service && profile.city) {
+        search({ query: profile.service, city: profile.city })
+      }
+    })
+  }, [search])
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">

@@ -7,6 +7,8 @@ export interface ProfileResult {
   effectivePlan: UserPlan
   trialEndsAt: string | null
   service: string | null
+  city: string | null
+  onboardingCompleted: boolean
 }
 
 export const profileApiClient = {
