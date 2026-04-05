@@ -1,4 +1,5 @@
 import { PlaceResult } from '@/lib/types/places'
+import { AppError, RateLimitError, ConfigurationError } from '@/lib/http/errors'
 
 const PLACES_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place'
 const PLACES_DETAIL_FIELDS = 'place_id,name,formatted_phone_number,website,rating,user_ratings_total,formatted_address,geometry'
@@ -17,6 +18,16 @@ interface PlacesDetailApiResponse {
 export interface IGooglePlacesRepository {
   searchByText(query: string, city: string): Promise<{ place_id: string }[]>
   getDetails(placeId: string): Promise<PlaceResult | null>
+}
+
+function toPlacesApiError(status: string): AppError {
+  if (status === 'OVER_QUERY_LIMIT') {
+    return new RateLimitError('Limite de requisições do Google Places atingido', 'GOOGLE_RATE_LIMIT')
+  }
+  if (status === 'REQUEST_DENIED') {
+    return new ConfigurationError('Chave da API do Google Places inválida ou sem permissão', 'GOOGLE_API_KEY_INVALID')
+  }
+  return new AppError(`Google Places API retornou erro: ${status}`, 503, 'GOOGLE_API_ERROR')
 }
 
 function assertPlacesSearchResponse(data: unknown): asserts data is PlacesSearchApiResponse {
@@ -66,7 +77,7 @@ export class GooglePlacesRepository implements IGooglePlacesRepository {
     assertPlacesSearchResponse(rawData)
 
     if (rawData.status !== 'OK' && rawData.status !== 'ZERO_RESULTS') {
-      throw new Error(`Google Places API retornou erro: ${rawData.status}`)
+      throw toPlacesApiError(rawData.status)
     }
 
     return rawData.results ?? []
