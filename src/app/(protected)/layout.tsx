@@ -1,13 +1,23 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { LogoutButton } from '@/components/ui/LogoutButton'
+import { TrialBanner } from '@/components/dashboard/TrialBanner'
 import { createClient } from '@/lib/supabase/server'
+import { makeProfileRepository } from '@/lib/factories/service.factory'
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/login')
+
+  const profileRepository = makeProfileRepository(supabase)
+  const profile = await profileRepository.findById(user.id)
+
+  const isOnTrial =
+    profile?.plan !== 'paid' &&
+    !!profile?.trialEndsAt &&
+    new Date(profile.trialEndsAt) > new Date()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,6 +38,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
           </div>
         </div>
       </nav>
+      {isOnTrial && <TrialBanner trialEndsAt={profile!.trialEndsAt!} />}
       {children}
     </div>
   )
