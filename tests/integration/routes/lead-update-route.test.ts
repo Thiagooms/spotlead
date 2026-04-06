@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => {
     createClient: vi.fn(),
     withAuth: vi.fn(),
     update: vi.fn(),
-    assertPaidPlan: vi.fn(),
+    assertAuthenticated: vi.fn(),
     makeLeadService: vi.fn(),
     makePlanGuard: vi.fn(),
   }
@@ -33,7 +33,7 @@ describe('PATCH /api/leads/[id]', () => {
     mocks.createClient.mockReset()
     mocks.withAuth.mockReset()
     mocks.update.mockReset()
-    mocks.assertPaidPlan.mockReset()
+    mocks.assertAuthenticated.mockReset()
     mocks.makeLeadService.mockReset()
     mocks.makePlanGuard.mockReset()
 
@@ -47,13 +47,13 @@ describe('PATCH /api/leads/[id]', () => {
       update: mocks.update,
     })
     mocks.makePlanGuard.mockReturnValue({
-      assertPaidPlan: mocks.assertPaidPlan,
+      assertAuthenticated: mocks.assertAuthenticated,
     })
   })
 
-  it('bloqueia update para usuario sem plano pago', async () => {
-    mocks.assertPaidPlan.mockRejectedValue(
-      new ForbiddenError('Plano pago necessario', 'PAID_PLAN_REQUIRED')
+  it('bloqueia update para usuario sem perfil', async () => {
+    mocks.assertAuthenticated.mockRejectedValue(
+      new ForbiddenError('Perfil nao encontrado', 'PROFILE_NOT_FOUND')
     )
 
     const request = new NextRequest('http://localhost/api/leads/lead-1', {
@@ -69,14 +69,14 @@ describe('PATCH /api/leads/[id]', () => {
     expect(response.status).toBe(403)
     expect(payload).toEqual({
       error: {
-        code: 'PAID_PLAN_REQUIRED',
-        message: 'Plano pago necessario',
+        code: 'PROFILE_NOT_FOUND',
+        message: 'Perfil nao encontrado',
       },
     })
     expect(mocks.update).not.toHaveBeenCalled()
   })
 
-  it('atualiza o lead quando o plano e pago', async () => {
+  it('atualiza o lead para usuario autenticado', async () => {
     mocks.update.mockResolvedValue({
       id: 'lead-1',
       status: 'approached',
@@ -105,7 +105,7 @@ describe('PATCH /api/leads/[id]', () => {
       notes: 'Primeiro contato feito',
       lastContact: '2026-04-04T12:00:00.000Z',
     })
-    expect(mocks.assertPaidPlan).toHaveBeenCalledWith('user-1')
+    expect(mocks.assertAuthenticated).toHaveBeenCalledWith('user-1')
     expect(mocks.update).toHaveBeenCalledWith('lead-1', 'user-1', {
       status: 'approached',
       notes: 'Primeiro contato feito',

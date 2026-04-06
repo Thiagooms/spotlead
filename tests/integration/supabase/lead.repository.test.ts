@@ -30,6 +30,7 @@ describeIf('LeadRepository with real Supabase', () => {
       rating: 4.8,
       totalRatings: 42,
       website: 'https://studio-acme.test',
+      address: 'Rua Acme, 123',
     })
 
     expect(lead.userId).toBe(context.userId)
@@ -38,13 +39,13 @@ describeIf('LeadRepository with real Supabase', () => {
     expect(lead.placeId).toMatch(/^place-/)
   })
 
-  it('bloqueia o 11o lead para usuario free', async () => {
+  it('bloqueia o 31o lead para usuario free', async () => {
     const context = await createAuthenticatedTestUser('free')
     cleanup = context.cleanup
 
     const repository = new LeadRepository(context.client)
 
-    for (let index = 0; index < 10; index += 1) {
+    for (let index = 0; index < 30; index += 1) {
       await repository.saveSecure({
         name: `Studio ${index}`,
         phone: null,
@@ -52,17 +53,19 @@ describeIf('LeadRepository with real Supabase', () => {
         rating: null,
         totalRatings: null,
         website: null,
+        address: null,
       })
     }
 
     await expect(
       repository.saveSecure({
-        name: 'Studio 11',
+        name: 'Studio 31',
         phone: null,
         placeId: `place-${randomUUID()}`,
         rating: null,
         totalRatings: null,
         website: null,
+        address: null,
       })
     ).rejects.toMatchObject({
       code: 'PLAN_LIMIT_REACHED',

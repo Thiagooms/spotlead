@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => {
     withAuth: vi.fn(),
     listByUser: vi.fn(),
     save: vi.fn(),
-    assertPaidPlan: vi.fn(),
+    assertAuthenticated: vi.fn(),
     makeLeadService: vi.fn(),
     makePlanGuard: vi.fn(),
   }
@@ -35,7 +35,7 @@ describe('/api/leads', () => {
     mocks.withAuth.mockReset()
     mocks.listByUser.mockReset()
     mocks.save.mockReset()
-    mocks.assertPaidPlan.mockReset()
+    mocks.assertAuthenticated.mockReset()
     mocks.makeLeadService.mockReset()
     mocks.makePlanGuard.mockReset()
 
@@ -50,13 +50,13 @@ describe('/api/leads', () => {
       save: mocks.save,
     })
     mocks.makePlanGuard.mockReturnValue({
-      assertPaidPlan: mocks.assertPaidPlan,
+      assertAuthenticated: mocks.assertAuthenticated,
     })
   })
 
-  it('bloqueia listagem para usuario sem plano pago', async () => {
-    mocks.assertPaidPlan.mockRejectedValue(
-      new ForbiddenError('Plano pago necessario', 'PAID_PLAN_REQUIRED')
+  it('bloqueia listagem para usuario sem perfil', async () => {
+    mocks.assertAuthenticated.mockRejectedValue(
+      new ForbiddenError('Perfil nao encontrado', 'PROFILE_NOT_FOUND')
     )
 
     const response = await GET()
@@ -65,14 +65,14 @@ describe('/api/leads', () => {
     expect(response.status).toBe(403)
     expect(payload).toEqual({
       error: {
-        code: 'PAID_PLAN_REQUIRED',
-        message: 'Plano pago necessario',
+        code: 'PROFILE_NOT_FOUND',
+        message: 'Perfil nao encontrado',
       },
     })
     expect(mocks.listByUser).not.toHaveBeenCalled()
   })
 
-  it('lista leads para usuario com plano pago', async () => {
+  it('lista leads para usuario autenticado', async () => {
     mocks.listByUser.mockResolvedValue([
       {
         id: 'lead-1',
@@ -87,6 +87,7 @@ describe('/api/leads', () => {
         status: 'new',
         notes: null,
         lastContact: null,
+        address: null,
         createdAt: '2026-04-04T10:00:00.000Z',
       },
     ])
@@ -96,7 +97,7 @@ describe('/api/leads', () => {
 
     expect(response.status).toBe(200)
     expect(payload).toHaveLength(1)
-    expect(mocks.assertPaidPlan).toHaveBeenCalledWith('user-1')
+    expect(mocks.assertAuthenticated).toHaveBeenCalledWith('user-1')
     expect(mocks.listByUser).toHaveBeenCalledWith('user-1')
   })
 

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const signatureIsValid = await isValidWebhookSignature(request, webhook.dataId)
     if (!signatureIsValid) {
       throw new UnauthorizedError(
-        'Assinatura do webhook inválida',
+        'Assinatura do webhook invalida',
         'INVALID_WEBHOOK_SIGNATURE'
       )
     }

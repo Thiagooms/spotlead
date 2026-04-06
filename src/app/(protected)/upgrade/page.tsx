@@ -14,12 +14,12 @@ export default function UpgradePage() {
   useEffect(() => {
     const supabase = createClient()
 
-    supabase.auth.getUser().then(async ({ data }) => {
+    supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email ?? '')
     })
 
     profileApiClient.get().then((profile) => {
-      setIsPaid(profile.plan === 'paid')
+      setIsPaid(profile.effectivePlan === 'paid')
       setIsLoading(false)
     })
   }, [])
@@ -47,16 +47,19 @@ export default function UpgradePage() {
           </p>
           <ul className="text-sm text-gray-600 space-y-2 mb-6">
             <li className="flex items-center gap-2">
-              <span className="text-green-500">✓</span> Busca ilimitada
+              <span className="text-green-500">✓</span> Busca no Google Maps
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-green-500">✓</span> Até 10 leads salvos
+              <span className="text-green-500">✓</span> Até 30 leads salvos
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-gray-300">✗</span> Pipeline Kanban
+              <span className="text-green-500">✓</span> Pipeline Kanban
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-gray-300">✗</span> Notas e histórico
+              <span className="text-gray-300">✗</span> Leads ilimitados
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-gray-300">✗</span> Suporte prioritário
             </li>
           </ul>
           <div className="w-full py-2 px-4 text-center text-sm font-medium text-gray-500 bg-gray-100 rounded-md">
@@ -70,11 +73,11 @@ export default function UpgradePage() {
           </span>
           <h2 className="text-lg font-semibold text-gray-900 mb-1">Pro</h2>
           <p className="text-3xl font-bold text-gray-900 mb-4">
-            R$50<span className="text-base font-normal text-gray-500">/mês</span>
+            R$49<span className="text-base font-normal text-gray-500">/mês</span>
           </p>
           <ul className="text-sm text-gray-600 space-y-2 mb-6">
             <li className="flex items-center gap-2">
-              <span className="text-green-500">✓</span> Busca ilimitada
+              <span className="text-green-500">✓</span> Busca no Google Maps
             </li>
             <li className="flex items-center gap-2">
               <span className="text-green-500">✓</span> Leads ilimitados
@@ -84,6 +87,9 @@ export default function UpgradePage() {
             </li>
             <li className="flex items-center gap-2">
               <span className="text-green-500">✓</span> Notas e histórico de contato
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-green-500">✓</span> Suporte prioritário
             </li>
           </ul>
           {isPaid ? (
