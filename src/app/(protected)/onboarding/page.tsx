@@ -22,6 +22,7 @@ export default function OnboardingPage() {
   const [customService, setCustomService] = useState('')
   const [city, setCity] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const selectedService = service === 'outro' ? customService : service
   const canAdvance = selectedService.trim().length > 0
@@ -30,15 +31,27 @@ export default function OnboardingPage() {
   async function handleSubmit() {
     if (!canSubmit || isSubmitting) return
     setIsSubmitting(true)
+    setSubmitError('')
 
-    await fetch('/api/profile/onboarding', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ service: selectedService.trim(), city: city.trim() }),
-    })
+    try {
+      const response = await fetch('/api/profile/onboarding', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service: selectedService.trim(), city: city.trim() }),
+      })
 
-    sessionStorage.setItem('spotlead:firstSearch', 'true')
-    router.push('/dashboard')
+      if (!response.ok) {
+        setSubmitError('Algo deu errado. Tente novamente.')
+        setIsSubmitting(false)
+        return
+      }
+
+      sessionStorage.setItem('spotlead:firstSearch', 'true')
+      router.push('/dashboard')
+    } catch {
+      setSubmitError('Erro de conexão. Tente novamente.')
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -126,6 +139,9 @@ export default function OnboardingPage() {
             >
               {isSubmitting ? 'Carregando...' : 'Ver meus leads'}
             </button>
+            {submitError && (
+              <p className="text-xs text-red-500 text-center mt-3">{submitError}</p>
+            )}
           </>
         )}
 
